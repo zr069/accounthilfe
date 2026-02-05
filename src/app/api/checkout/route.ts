@@ -60,26 +60,11 @@ export async function POST(request: Request) {
     }
 
     if (provider === "paypal") {
-      const { approvalUrl, orderId } = await createPayPalOrder({
-        amount,
-        kontotyp,
-        metadata: { kontotyp },
-        baseUrl,
-      });
-
-      // Store form data in database with PayPal order ID
-      if (formData && orderId) {
-        await prisma.pendingSubmission.create({
-          data: {
-            paypalOrderId: orderId,
-            formData: JSON.stringify(formData),
-            expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours
-          },
-        });
-        console.log(`[checkout] Stored form data for PayPal order ${orderId}`);
-      }
-
-      return NextResponse.json({ url: approvalUrl, orderId });
+      // PayPal temporarily disabled - sandbox keys don't work in production
+      return NextResponse.json(
+        { error: "PayPal ist derzeit nicht verfügbar. Bitte wählen Sie Kreditkarte oder Überweisung." },
+        { status: 400 }
+      );
     }
 
     return NextResponse.json(
@@ -88,8 +73,9 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     console.error("Checkout error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unbekannter Fehler";
     return NextResponse.json(
-      { error: "Failed to create checkout session" },
+      { error: `Fehler beim Erstellen der Zahlungssitzung: ${errorMessage}` },
       { status: 500 }
     );
   }

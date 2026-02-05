@@ -1141,7 +1141,7 @@ export default function WizardPage() {
               {/* Zahlungsmethode */}
               <div className="h-px bg-border my-6" />
               <h3 className="font-serif text-lg font-bold mb-4">Zahlungsmethode wählen</h3>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => setPaymentProvider("stripe")}
@@ -1158,24 +1158,6 @@ export default function WizardPage() {
                   </div>
                   <div className="text-[13px] text-muted">
                     Visa, Mastercard
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaymentProvider("paypal")}
-                  className={`p-4 rounded-[10px] border-[1.5px] cursor-pointer text-left transition-colors ${
-                    paymentProvider === "paypal"
-                      ? "border-accent bg-accent-light"
-                      : "border-border bg-card hover:border-muted"
-                  }`}
-                >
-                  <div className={`text-base font-semibold mb-1 ${
-                    paymentProvider === "paypal" ? "text-accent" : "text-foreground"
-                  }`}>
-                    PayPal
-                  </div>
-                  <div className="text-[13px] text-muted">
-                    PayPal-Konto
                   </div>
                 </button>
                 <button
