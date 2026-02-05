@@ -137,6 +137,31 @@ model Notification {
   sentAt    DateTime @default(now())
 }
 
+// E-Mail Verification Codes (statt in-memory)
+model VerificationCode {
+  id        String   @id @default(cuid())
+  email     String
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@unique([email])
+  @@index([email, code])
+}
+
+// Pending Form Submissions (für Stripe-Redirect)
+model PendingSubmission {
+  id              String   @id @default(cuid())
+  stripeSessionId String?  @unique
+  paypalOrderId   String?  @unique
+  formData        String   // JSON string mit allen Formulardaten
+  createdAt       DateTime @default(now())
+  expiresAt       DateTime // 24h nach Erstellung
+
+  @@index([stripeSessionId])
+  @@index([paypalOrderId])
+}
+
 // Enums
 
 enum CaseStatus {

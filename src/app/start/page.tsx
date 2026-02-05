@@ -12,6 +12,7 @@ import { GEBUEHREN, formatCurrency } from "@/lib/gebuehren";
 import DevoryCredit from "@/components/DevoryCredit";
 
 const SESSION_STORAGE_KEY = "accounthilfe_wizard_form";
+const LOCAL_STORAGE_KEY = "accounthilfe_form_backup";
 
 type PaymentProvider = "stripe" | "paypal" | "ueberweisung" | null;
 
@@ -301,10 +302,12 @@ export default function WizardPage() {
         return;
       }
 
-      // Save form data to sessionStorage for Stripe/PayPal
-      sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(form));
+      // Save form data to sessionStorage AND localStorage (backup for Safari)
+      const formDataStr = JSON.stringify(form);
+      sessionStorage.setItem(SESSION_STORAGE_KEY, formDataStr);
+      localStorage.setItem(LOCAL_STORAGE_KEY, formDataStr);
 
-      // Create checkout session
+      // Create checkout session - also send formData to store in DB
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -312,7 +315,7 @@ export default function WizardPage() {
           provider: paymentProvider,
           kontotyp: form.kontotyp,
           email: form.email,
-          sessionKey: Date.now().toString(), // Unique key for this session
+          formData: form, // Send complete form data for DB storage
         }),
       });
 

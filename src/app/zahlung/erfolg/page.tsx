@@ -7,6 +7,7 @@ import { PLATFORM_CONFIG, type PlatformKey } from "@/lib/platforms";
 import DevoryCredit from "@/components/DevoryCredit";
 
 const SESSION_STORAGE_KEY = "accounthilfe_wizard_form";
+const LOCAL_STORAGE_KEY = "accounthilfe_form_backup";
 
 type BankDetails = {
   empfaenger: string;
@@ -54,6 +55,7 @@ function ZahlungErfolgContent() {
 
         setStatus("success");
         sessionStorage.removeItem(SESSION_STORAGE_KEY);
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
         return;
       }
 
@@ -63,23 +65,59 @@ function ZahlungErfolgContent() {
         return;
       }
 
-      // Get form data from sessionStorage
-      const storedData = sessionStorage.getItem(SESSION_STORAGE_KEY);
-      if (!storedData) {
+      // Try to get form data from multiple sources
+      let form: Record<string, unknown> | null = null;
+
+      // 1. Try sessionStorage first
+      const sessionData = sessionStorage.getItem(SESSION_STORAGE_KEY);
+      if (sessionData) {
+        try {
+          form = JSON.parse(sessionData);
+          console.log("[erfolg] Form data from sessionStorage");
+        } catch {
+          // Continue to next source
+        }
+      }
+
+      // 2. Try localStorage as fallback
+      if (!form) {
+        const localData = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (localData) {
+          try {
+            form = JSON.parse(localData);
+            console.log("[erfolg] Form data from localStorage");
+          } catch {
+            // Continue to next source
+          }
+        }
+      }
+
+      // 3. Try database as final fallback
+      if (!form) {
+        try {
+          const queryParam = stripeSessionId
+            ? `stripeSessionId=${stripeSessionId}`
+            : `paypalOrderId=${paypalToken}`;
+
+          const response = await fetch(`/api/pending-submission?${queryParam}`);
+          if (response.ok) {
+            const data = await response.json();
+            form = data.formData;
+            console.log("[erfolg] Form data from database");
+          }
+        } catch (e) {
+          console.error("[erfolg] Failed to fetch from DB:", e);
+        }
+      }
+
+      // If still no form data, show error
+      if (!form) {
         setErrorMessage("Formulardaten nicht gefunden. Bitte starten Sie den Vorgang erneut.");
         setStatus("error");
         return;
       }
 
-      let form: Record<string, unknown>;
-      try {
-        form = JSON.parse(storedData);
-        setFormData(form);
-      } catch {
-        setErrorMessage("Fehler beim Lesen der Formulardaten.");
-        setStatus("error");
-        return;
-      }
+      setFormData(form);
 
       // Call API to create case
       try {
@@ -103,8 +141,16 @@ function ZahlungErfolgContent() {
         setCaseNumber(result.caseNumber);
         setStatus("success");
 
-        // Clear sessionStorage after successful case creation
+        // Clean up all storage after successful case creation
         sessionStorage.removeItem(SESSION_STORAGE_KEY);
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
+
+        // Also clean up database entry
+        const cleanupParam = stripeSessionId
+          ? `stripeSessionId=${stripeSessionId}`
+          : `paypalOrderId=${paypalToken}`;
+        fetch(`/api/pending-submission?${cleanupParam}`, { method: "DELETE" }).catch(() => {});
+
       } catch (e) {
         console.error("Error creating case:", e);
         setErrorMessage(e instanceof Error ? e.message : "Unbekannter Fehler");

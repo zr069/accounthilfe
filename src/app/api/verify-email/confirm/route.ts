@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getVerificationCode, deleteVerificationCode } from "../route";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
@@ -19,24 +19,36 @@ export async function POST(request: Request) {
       );
     }
 
-    const storedData = getVerificationCode(email);
+    const normalizedEmail = email.toLowerCase().trim();
+    const trimmedCode = code.trim();
 
-    if (!storedData) {
+    // Get verification code from database
+    const storedCode = await prisma.verificationCode.findUnique({
+      where: { email: normalizedEmail },
+    });
+
+    if (!storedCode) {
+      console.log(`[verify-email/confirm] No code found for ${normalizedEmail}`);
       return NextResponse.json(
         { error: "Kein Code für diese E-Mail-Adresse gefunden. Bitte neuen Code anfordern." },
         { status: 400 }
       );
     }
 
-    if (Date.now() > storedData.expiresAt) {
-      deleteVerificationCode(email);
+    // Check if expired
+    if (new Date() > storedCode.expiresAt) {
+      // Delete expired code
+      await prisma.verificationCode.delete({
+        where: { email: normalizedEmail },
+      });
       return NextResponse.json(
         { error: "Code abgelaufen. Bitte neuen Code anfordern." },
         { status: 400 }
       );
     }
 
-    if (storedData.code !== code.trim()) {
+    // Check if code matches
+    if (storedCode.code !== trimmedCode) {
       return NextResponse.json(
         { error: "Ungültiger Code" },
         { status: 400 }
@@ -44,9 +56,11 @@ export async function POST(request: Request) {
     }
 
     // Code is valid - delete it so it can't be reused
-    deleteVerificationCode(email);
+    await prisma.verificationCode.delete({
+      where: { email: normalizedEmail },
+    });
 
-    console.log(`[verify-email] Email verified: ${email}`);
+    console.log(`[verify-email/confirm] Email verified: ${normalizedEmail}`);
 
     return NextResponse.json({ success: true, verified: true });
   } catch (error) {

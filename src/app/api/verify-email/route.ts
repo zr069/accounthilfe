@@ -1,28 +1,6 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 import { sendEmail } from "@/lib/email";
-
-// In-memory store for verification codes (in production, use Redis or DB)
-// Map<email, { code: string, expiresAt: number }>
-const verificationCodes = new Map<string, { code: string; expiresAt: number }>();
-
-// Clean up expired codes periodically
-function cleanupExpiredCodes() {
-  const now = Date.now();
-  for (const [email, data] of verificationCodes.entries()) {
-    if (data.expiresAt < now) {
-      verificationCodes.delete(email);
-    }
-  }
-}
-
-export function getVerificationCode(email: string): { code: string; expiresAt: number } | undefined {
-  cleanupExpiredCodes();
-  return verificationCodes.get(email.toLowerCase());
-}
-
-export function deleteVerificationCode(email: string): void {
-  verificationCodes.delete(email.toLowerCase());
-}
 
 export async function POST(request: Request) {
   try {
@@ -44,12 +22,25 @@ export async function POST(request: Request) {
       );
     }
 
+    const normalizedEmail = email.toLowerCase().trim();
+
     // Generate 6-digit code
     const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Store with 10 minute expiry
-    const expiresAt = Date.now() + 10 * 60 * 1000;
-    verificationCodes.set(email.toLowerCase(), { code, expiresAt });
+    // Store in database with 10 minute expiry
+    // Delete any existing code for this email first
+    await prisma.verificationCode.upsert({
+      where: { email: normalizedEmail },
+      update: {
+        code,
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+      },
+      create: {
+        email: normalizedEmail,
+        code,
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+      },
+    });
 
     // Send verification email
     const emailContent = {
@@ -70,13 +61,12 @@ export async function POST(request: Request) {
 
     await sendEmail({ to: email, ...emailContent });
 
-    console.log(`[verify-email] Code sent to ${email}`);
+    console.log(`[verify-email] Code sent to ${normalizedEmail}`);
 
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("[verify-email] FEHLER:", error);
     console.error("[verify-email] Error message:", error instanceof Error ? error.message : String(error));
-    console.error("[verify-email] Error stack:", error instanceof Error ? error.stack : "no stack");
     return NextResponse.json(
       { error: "Fehler beim Senden des Codes" },
       { status: 500 }
