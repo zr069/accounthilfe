@@ -74,7 +74,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("[verify-email] Error:", error);
+    console.error("[verify-email] FEHLER:", error);
+    console.error("[verify-email] Error message:", error instanceof Error ? error.message : String(error));
+    console.error("[verify-email] Error stack:", error instanceof Error ? error.stack : "no stack");
     return NextResponse.json(
       { error: "Fehler beim Senden des Codes" },
       { status: 500 }

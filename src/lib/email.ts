@@ -17,11 +17,17 @@ interface EmailOptions {
 }
 
 export async function sendEmail({ to, subject, html }: EmailOptions) {
+  console.log(`[Email] sendEmail aufgerufen für: ${to}`);
+  console.log(`[Email] SMTP_HOST: ${process.env.SMTP_HOST ? "gesetzt" : "FEHLT"}`);
+  console.log(`[Email] SMTP_USER: ${process.env.SMTP_USER ? "gesetzt" : "FEHLT"}`);
+  console.log(`[Email] SMTP_PASS: ${process.env.SMTP_PASS ? "gesetzt" : "FEHLT"}`);
+
   if (!process.env.SMTP_HOST || !process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    console.log(`[Email] SMTP nicht konfiguriert – E-Mail wird nicht gesendet.`);
-    console.log(`[Email] Empfänger: ${to}`);
-    console.log(`[Email] Betreff: ${subject}`);
-    return;
+    const error = new Error(
+      `SMTP nicht konfiguriert! HOST=${!!process.env.SMTP_HOST}, USER=${!!process.env.SMTP_USER}, PASS=${!!process.env.SMTP_PASS}`
+    );
+    console.error(`[Email] ${error.message}`);
+    throw error;
   }
 
   try {
@@ -33,6 +39,7 @@ export async function sendEmail({ to, subject, html }: EmailOptions) {
       html,
     });
     console.log(`[Email] Erfolgreich gesendet an ${to}: ${subject}`, result.messageId);
+    return result;
   } catch (error) {
     console.error(`[Email] FEHLER beim Senden an ${to}:`, error);
     throw error;
