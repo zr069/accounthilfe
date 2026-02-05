@@ -1,0 +1,60 @@
+export const PLATFORM_CONFIG = {
+  INSTAGRAM: {
+    name: "Instagram",
+    antragsgegner: "Meta Platforms Ireland Ltd.",
+    adresse: "4 Grand Canal Square, Grand Canal Harbour, Dublin 2, Irland",
+    bezeichnung: "des Instagram-Kontos",
+    bezeichnungGenitiv: "des Instagram-Kontos",
+    isVLOP: true,
+  },
+  FACEBOOK: {
+    name: "Facebook",
+    antragsgegner: "Meta Platforms Ireland Ltd.",
+    adresse: "4 Grand Canal Square, Grand Canal Harbour, Dublin 2, Irland",
+    bezeichnung: "der Facebook-Seite",
+    bezeichnungGenitiv: "der Facebook-Seite",
+    isVLOP: true,
+  },
+  TIKTOK: {
+    name: "TikTok",
+    antragsgegner: "TikTok Technology Limited",
+    adresse: "10 Earlsfort Terrace, Dublin 2, D02 T380, Irland",
+    bezeichnung: "des TikTok-Kontos",
+    bezeichnungGenitiv: "des TikTok-Kontos",
+    isVLOP: true,
+  },
+  YOUTUBE: {
+    name: "YouTube",
+    antragsgegner: "Google Ireland Limited",
+    adresse: "Gordon House, Barrow Street, Dublin 4, Irland",
+    bezeichnung: "des YouTube-Kanals",
+    bezeichnungGenitiv: "des YouTube-Kanals",
+    isVLOP: true,
+  },
+  X: {
+    name: "X (Twitter)",
+    antragsgegner: "Twitter International Unlimited Company",
+    adresse: "One Cumberland Place, Fenian Street, Dublin 2, D02 AX07, Irland",
+    bezeichnung: "des X-Kontos (vormals Twitter)",
+    bezeichnungGenitiv: "des X-Kontos",
+    isVLOP: true,
+  },
+  TWITCH: {
+    name: "Twitch",
+    antragsgegner: "Twitch Interactive Germany GmbH",
+    adresse: "Kurfürstendamm 195, 10707 Berlin, Deutschland",
+    bezeichnung: "des Twitch-Kanals",
+    bezeichnungGenitiv: "des Twitch-Kanals",
+    isVLOP: false,
+  },
+  KICK: {
+    name: "Kick",
+    antragsgegner: "Kick Streaming Pty Ltd",
+    adresse: "100 Barangaroo Avenue, Sydney NSW 2000, Australien",
+    bezeichnung: "des Kick-Kanals",
+    bezeichnungGenitiv: "des Kick-Kanals",
+    isVLOP: false,
+  },
+} as const;
+
+export type PlatformKey = keyof typeof PLATFORM_CONFIG;

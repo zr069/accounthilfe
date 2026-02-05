@@ -1,0 +1,206 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime?
+  vorname       String
+  nachname      String
+  telefon       String?
+  strasse       String
+  plz           String
+  stadt         String
+  cases         Case[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Case {
+  id              String   @id @default(cuid())
+  caseNumber      String   @unique  // Format: "AH-2026-0001"
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+
+  // Status & Track
+  status          CaseStatus  @default(MANDAT_ERTEILT)
+  track           Track
+
+  // Plattform & Konto
+  platform        Platform
+  nutzername      String
+  registrierteEmail String
+  profilUrl       String?
+
+  // Sperrung
+  sperrDatum      DateTime
+  sperrGrund      SperrGrund
+  sperrGrundFreitext String?
+  sperrDetails    String?
+
+  // Kontotyp
+  kontotyp        Kontotyp
+
+  // Gewerbliche Details (nur bei kontotyp = GEWERBLICH)
+  gewerbBeschreibung    String?
+  followerCount         String?
+  monatlicheEinnahmen   String?
+  vertraegeBetroffen    Boolean   @default(false)
+
+  // Fristlogik (alles serverseitig berechnet)
+  monatsfristEnde       DateTime
+  abmahnfristDatum      DateTime  // konkretes Fristdatum im Schreiben
+  abmahnfristTage       Int       // Anzahl Tage (7/14 etc.)
+  abmahnungVersendetAm  DateTime?
+
+  // Mandatierung
+  vollmachtErteilt      Boolean   @default(false)
+  verguetungAkzeptiert  Boolean   @default(false)
+  datenschutzAkzeptiert Boolean   @default(false)
+
+  // Eskalation
+  evAntragErstelltAm    DateTime?
+  klageErstelltAm       DateTime?
+
+  // Abschluss
+  entsperrtAm           DateTime?
+
+  // Interne Notizen (Admin)
+  interneNotizen        String?
+
+  // Zahlung
+  paymentId             String?
+  paymentMethod         PaymentMethod?
+  paymentStatus         PaymentStatus  @default(AUSSTEHEND)
+
+  // Relations
+  uploads        Upload[]
+  notifications  Notification[]
+  invoice        Invoice?
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique  // Same as caseNumber: "AH-2026-0001"
+  caseId        String        @unique
+  case          Case          @relation(fields: [caseId], references: [id])
+
+  // Amounts (stored as cents to avoid floating point issues)
+  amount        Int           // Gesamtbetrag brutto in cents
+  netAmount     Int           // Nettobetrag in cents
+  vatAmount     Int           // USt-Betrag in cents
+  vatRate       Int           @default(19)  // 19%
+
+  // Items stored as JSON string
+  items         String        // JSON array of line items
+
+  status        InvoiceStatus @default(OFFEN)
+
+  paymentMethod PaymentMethod?
+
+  createdAt     DateTime      @default(now())
+  paidAt        DateTime?
+}
+
+// Counter for sequential numbering
+model Counter {
+  id      String @id @default("case_counter")
+  year    Int
+  counter Int    @default(0)
+}
+
+model Upload {
+  id        String   @id @default(cuid())
+  caseId    String
+  case      Case     @relation(fields: [caseId], references: [id])
+  filename  String
+  url       String
+  mimeType  String
+  size      Int
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  caseId    String
+  case      Case     @relation(fields: [caseId], references: [id])
+  type      NotificationType
+  sentAt    DateTime @default(now())
+}
+
+// Enums
+
+enum CaseStatus {
+  MANDAT_ERTEILT
+  ABMAHNUNG_VERSANDT
+  AUSSERGERICHTLICH_ENTSPERRT
+  FRIST_VERSTRICHEN
+  GERICHTSPROZESS_EINGELEITET
+  TERMIN_ANGESETZT
+  GERICHTLICH_ENTSPERRT
+  ABGESCHLOSSEN
+}
+
+enum Track {
+  A_INJUNCTION   // eV möglich (Sperrung < 1 Monat)
+  B_LAWSUIT      // nur Klage (Sperrung > 1 Monat)
+}
+
+enum Platform {
+  INSTAGRAM
+  FACEBOOK
+  TIKTOK
+  YOUTUBE
+  X
+  TWITCH
+  KICK
+}
+
+enum SperrGrund {
+  COMMUNITY_STANDARDS
+  IMPERSONATION
+  SPAM
+  COPYRIGHT
+  HATE_SPEECH
+  UNKNOWN
+  OTHER
+}
+
+enum Kontotyp {
+  PRIVAT
+  GEWERBLICH
+}
+
+enum NotificationType {
+  DEADLINE_REMINDER_3D   // 3 Tage vor Fristablauf
+  DEADLINE_REMINDER_1D   // 1 Tag vor Fristablauf
+  DEADLINE_EXPIRED       // Frist abgelaufen
+  CASE_RESOLVED          // Konto entsperrt
+}
+
+enum PaymentMethod {
+  STRIPE
+  PAYPAL
+  UEBERWEISUNG
+}
+
+enum PaymentStatus {
+  AUSSTEHEND
+  BEZAHLT
+}
+
+enum InvoiceStatus {
+  ENTWURF
+  OFFEN
+  BEZAHLT
+  STORNIERT
+}
