@@ -10,10 +10,8 @@
   },
   "dependencies": {
     "@paypal/checkout-server-sdk": "^1.0.3",
-    "@prisma/adapter-better-sqlite3": "^7.3.0",
     "@prisma/client": "^7.3.0",
     "@react-pdf/renderer": "^4.3.2",
-    "better-sqlite3": "^12.6.2",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.3",
     "next": "16.1.6",
@@ -26,7 +24,6 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^20",
     "@types/nodemailer": "^7.0.9",
     "@types/react": "^19",
