@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
-import { FaInstagram, FaFacebook, FaTiktok, FaYoutube, FaTwitch } from "react-icons/fa";
+import { FaInstagram, FaFacebook, FaTiktok, FaYoutube, FaTwitch, FaWhatsapp } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
 const PLATFORMS = [
@@ -12,6 +12,7 @@ const PLATFORMS = [
   { name: "Twitch", color: "#9146FF", icon: FaTwitch },
   { name: "Facebook", color: "#1877F2", icon: FaFacebook },
   { name: "YouTube", color: "#FF0000", icon: FaYoutube },
+  { name: "WhatsApp", color: "#25D366", icon: FaWhatsapp },
 ];
 
 const TESTIMONIALS = [
@@ -51,6 +52,12 @@ const TESTIMONIALS = [
     role: "Rapper",
     platform: "Kick",
   },
+  {
+    quote: "Mein WhatsApp wurde gesperrt und ich konnte nicht mehr mit meinen Geschäftspartnern kommunizieren. DR. SARAFI hat sich um alles gekümmert und mein Konto wurde entsperrt.",
+    name: "Prinz Marcus",
+    role: "Unternehmer",
+    platform: "WhatsApp",
+  },
 ];
 
 export default function LandingPage() {
@@ -65,7 +72,7 @@ export default function LandingPage() {
         </h1>
         <p className="text-lg text-muted leading-relaxed text-center max-w-[600px] mb-10">
           Wir helfen Ihnen gegenüber Instagram, Facebook, TikTok, YouTube, X,
-          Twitch und Kick.
+          Twitch, Kick und WhatsApp.
         </p>
         <Link
           href="/start"

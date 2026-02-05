@@ -1,7 +1,7 @@
 "use client";
 
 import { PLATFORM_CONFIG, type PlatformKey } from "@/lib/platforms";
-import { FaInstagram, FaFacebook, FaTiktok, FaYoutube, FaTwitch } from "react-icons/fa";
+import { FaInstagram, FaFacebook, FaTiktok, FaYoutube, FaTwitch, FaWhatsapp } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import type { IconType } from "react-icons";
 
@@ -12,6 +12,7 @@ const PLATFORM_ICONS: Record<Exclude<PlatformKey, "KICK">, IconType> = {
   YOUTUBE: FaYoutube,
   X: FaXTwitter,
   TWITCH: FaTwitch,
+  WHATSAPP: FaWhatsapp,
 };
 
 const PLATFORM_COLORS: Record<PlatformKey, string> = {
@@ -22,6 +23,7 @@ const PLATFORM_COLORS: Record<PlatformKey, string> = {
   X: "#000000",
   TWITCH: "#9146FF",
   KICK: "#53FC18",
+  WHATSAPP: "#25D366",
 };
 
 interface PlatformSelectorProps {

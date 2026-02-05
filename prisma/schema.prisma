@@ -188,6 +188,7 @@ enum Platform {
   X
   TWITCH
   KICK
+  WHATSAPP
 }
 
 enum SperrGrund {

@@ -476,28 +476,28 @@ export default function WizardPage() {
               <div className="grid grid-cols-2 gap-4 mb-5">
                 <div>
                   <label className="block text-sm font-semibold mb-1.5">
-                    Nutzername *
+                    {form.platform === "WHATSAPP" ? "WhatsApp-Telefonnummer *" : "Nutzername *"}
                   </label>
                   <input
-                    type="text"
+                    type={form.platform === "WHATSAPP" ? "tel" : "text"}
                     value={form.nutzername}
                     onChange={(e) => set("nutzername", e.target.value)}
-                    placeholder="@benutzername"
+                    placeholder={form.platform === "WHATSAPP" ? "+49 123 456789" : "@benutzername"}
                     className={inputClass("nutzername")}
                   />
                   <Err k="nutzername" />
                 </div>
                 <div>
                   <label className="block text-sm font-semibold mb-1.5">
-                    Registrierte E-Mail *
+                    {form.platform === "WHATSAPP" ? "Registrierte Telefonnummer *" : "Registrierte E-Mail *"}
                   </label>
                   <input
-                    type="email"
+                    type={form.platform === "WHATSAPP" ? "tel" : "email"}
                     value={form.registrierteEmail}
                     onChange={(e) =>
                       set("registrierteEmail", e.target.value)
                     }
-                    placeholder="konto@email.de"
+                    placeholder={form.platform === "WHATSAPP" ? "+49 123 456789" : "konto@email.de"}
                     className={inputClass("registrierteEmail")}
                   />
                   <Err k="registrierteEmail" />
@@ -1033,7 +1033,7 @@ export default function WizardPage() {
                       : "–"
                   }
                 />
-                <SummaryRow label="Nutzername" value={form.nutzername} />
+                <SummaryRow label={form.platform === "WHATSAPP" ? "Telefonnummer" : "Nutzername"} value={form.nutzername} />
                 <SummaryRow
                   label="Gesperrt am"
                   value={

@@ -55,6 +55,14 @@ export const PLATFORM_CONFIG = {
     bezeichnungGenitiv: "des Kick-Kanals",
     isVLOP: false,
   },
+  WHATSAPP: {
+    name: "WhatsApp",
+    antragsgegner: "WhatsApp Ireland Limited",
+    adresse: "Merrion Road, Dublin 4, D04 P2N6, Irland",
+    bezeichnung: "des WhatsApp-Kontos",
+    bezeichnungGenitiv: "des WhatsApp-Kontos",
+    isVLOP: true,
+  },
 } as const;
 
 export type PlatformKey = keyof typeof PLATFORM_CONFIG;
