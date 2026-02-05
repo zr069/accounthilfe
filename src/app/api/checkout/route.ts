@@ -23,6 +23,14 @@ export async function POST(request: Request) {
       );
     }
 
+    // Determine base URL: ENV > origin header > localhost fallback
+    const baseUrl =
+      process.env.NEXT_PUBLIC_BASE_URL ||
+      request.headers.get("origin") ||
+      "http://localhost:3000";
+
+    console.log(`[checkout] Using baseUrl: ${baseUrl}`);
+
     const validKontotyp = kontotyp as keyof typeof GEBUEHREN;
     const amount = GEBUEHREN[validKontotyp].gesamt;
 
@@ -33,6 +41,7 @@ export async function POST(request: Request) {
         kontotyp,
         customerEmail: email,
         metadata: { kontotyp },
+        baseUrl,
       });
 
       // Store form data in database with Stripe session ID
@@ -55,6 +64,7 @@ export async function POST(request: Request) {
         amount,
         kontotyp,
         metadata: { kontotyp },
+        baseUrl,
       });
 
       // Store form data in database with PayPal order ID

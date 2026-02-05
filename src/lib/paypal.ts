@@ -29,10 +29,12 @@ export async function createPayPalOrder({
   amount,
   kontotyp,
   metadata,
+  baseUrl,
 }: {
   amount: number;
   kontotyp: string;
   metadata: Record<string, string>;
+  baseUrl: string;
 }): Promise<{ orderId: string; approvalUrl: string }> {
   const client = getPayPalClient();
 
@@ -51,8 +53,8 @@ export async function createPayPalOrder({
       },
     ],
     application_context: {
-      return_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/zahlung/erfolg?paypal=true`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/zahlung/abbruch`,
+      return_url: `${baseUrl}/zahlung/erfolg?paypal=true`,
+      cancel_url: `${baseUrl}/zahlung/abbruch`,
       brand_name: "AccountHilfe.de",
       landing_page: "LOGIN",
       user_action: "PAY_NOW",

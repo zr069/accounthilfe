@@ -20,11 +20,13 @@ export async function createCheckoutSession({
   kontotyp,
   customerEmail,
   metadata,
+  baseUrl,
 }: {
   amount: number;
   kontotyp: string;
   customerEmail: string;
   metadata: Record<string, string>;
+  baseUrl: string;
 }): Promise<{ sessionId: string; url: string }> {
   const stripe = getStripe();
 
@@ -46,8 +48,8 @@ export async function createCheckoutSession({
       },
     ],
     metadata,
-    success_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/zahlung/erfolg?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"}/zahlung/abbruch`,
+    success_url: `${baseUrl}/zahlung/erfolg?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${baseUrl}/zahlung/abbruch`,
   });
 
   if (!session.url) {
