@@ -123,24 +123,46 @@ export async function POST(request: Request) {
     // Generate sequential case number
     const caseNumber = await generateSequentialNumber();
 
-    // User erstellen oder finden
-    let user = await prisma.user.findUnique({
-      where: { email },
+    // Log form data for debugging
+    console.log(`[Cases] Creating case with form data:`, {
+      vorname,
+      nachname,
+      email,
+      strasse,
+      plz,
+      stadt,
+      telefon,
     });
 
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          email,
-          vorname,
-          nachname,
-          telefon: telefon || null,
-          strasse,
-          plz,
-          stadt,
-        },
-      });
-    }
+    // User erstellen oder aktualisieren (IMMER mit neuen Formulardaten!)
+    const user = await prisma.user.upsert({
+      where: { email },
+      update: {
+        // Aktualisiere IMMER mit den neuen Formulardaten
+        vorname,
+        nachname,
+        telefon: telefon || null,
+        strasse,
+        plz,
+        stadt,
+      },
+      create: {
+        email,
+        vorname,
+        nachname,
+        telefon: telefon || null,
+        strasse,
+        plz,
+        stadt,
+      },
+    });
+
+    console.log(`[Cases] User upserted:`, {
+      id: user.id,
+      vorname: user.vorname,
+      nachname: user.nachname,
+      strasse: user.strasse,
+    });
 
     // Fall anlegen mit Zahlungsinformationen
     const newCase = await prisma.case.create({

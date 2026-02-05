@@ -223,7 +223,11 @@ export default function WizardPage() {
       if (form.wohnsitzDE === null) e.wohnsitzDE = "Bitte angeben";
       if (form.wohnsitzDE === false)
         e.wohnsitzDE = "Nur für Mandanten mit Wohnsitz in Deutschland.";
-      if (!form.sperrDatum) e.sperrDatum = "Pflichtfeld";
+      if (!form.sperrDatum) {
+        e.sperrDatum = "Pflichtfeld";
+      } else if (new Date(form.sperrDatum) > new Date()) {
+        e.sperrDatum = "Das Sperrdatum kann nicht in der Zukunft liegen";
+      }
     }
 
     if (s === 2) {
@@ -427,6 +431,7 @@ export default function WizardPage() {
                   ref={dateInputRef}
                   type="date"
                   value={form.sperrDatum}
+                  max={new Date().toISOString().split("T")[0]}
                   onChange={(e) => set("sperrDatum", e.target.value)}
                   onClick={() => {
                     if (form.wohnsitzDE === true && dateInputRef.current) {
@@ -1220,7 +1225,7 @@ export default function WizardPage() {
                 <button
                   type="button"
                   onClick={next}
-                  disabled={step === 1 && form.wohnsitzDE === false}
+                  disabled={step === 1 && (form.wohnsitzDE === false || (form.sperrDatum && new Date(form.sperrDatum) > new Date()))}
                   className="btn-shine bg-accent text-white text-[15px] font-semibold px-7 py-3 rounded-lg disabled:bg-border disabled:cursor-default disabled:overflow-visible disabled:after:hidden"
                 >
                   Weiter →
