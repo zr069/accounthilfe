@@ -19,6 +19,12 @@ export const metadata: Metadata = {
   title: "AccountHilfe.de – Anwaltliche Hilfe bei Social-Media-Sperrungen",
   description:
     "Wir setzen Ihr Recht auf Entsperrung durch – vom außergerichtlichen Schreiben bis zur einstweiligen Verfügung. Ein Angebot der DR. SARAFI Rechtsanwaltsgesellschaft mbH.",
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({
