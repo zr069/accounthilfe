@@ -66,7 +66,7 @@ export default function LandingPage() {
       <Nav />
 
       {/* Hero */}
-      <section className="flex flex-col items-center justify-center px-6 pt-24 pb-12">
+      <section className="flex flex-col items-center justify-center px-6 pt-28 pb-20">
         <h1 className="font-serif text-[clamp(32px,5vw,52px)] font-bold leading-[1.15] tracking-tight text-center mb-6">
           Social-Media-Konto gesperrt?
         </h1>
@@ -96,8 +96,8 @@ export default function LandingPage() {
           })}
         </div>
 
-        <p className="text-lg text-muted leading-relaxed text-center max-w-[500px] mb-8">
-          Wir setzen Ihre Rechte durch – außergerichtlich oder vor Gericht.
+        <p className="text-lg text-muted leading-relaxed text-center max-w-[600px] mb-8">
+          Wir haben bereits zahlreiche Accounts auf diesen Plattformen erfolgreich entsperrt.
         </p>
 
         <Link
@@ -109,7 +109,7 @@ export default function LandingPage() {
       </section>
 
       {/* Kanzlei-Vorstellung */}
-      <section className="bg-[#F5F5F3] py-14">
+      <section className="bg-[#F5F5F3] py-20">
         <div className="max-w-[700px] mx-auto px-6 text-center">
           <h2 className="font-serif text-[clamp(24px,3.5vw,32px)] font-bold leading-tight tracking-tight mb-5">
             DR. SARAFI Rechtsanwaltsgesellschaft mbH
@@ -126,7 +126,7 @@ export default function LandingPage() {
       </section>
 
       {/* Testimonials */}
-      <section className="bg-[#F0EFEB] py-14">
+      <section className="bg-[#F0EFEB] py-20">
         <div className="max-w-[1000px] mx-auto px-6">
           <h2 className="font-serif text-[clamp(24px,3.5vw,32px)] font-bold leading-tight tracking-tight text-center mb-10">
             Das sagen unsere Mandanten
@@ -163,7 +163,7 @@ export default function LandingPage() {
       </section>
 
       {/* Warum schnell handeln */}
-      <section className="bg-background py-14">
+      <section className="bg-background py-20">
         <div className="max-w-[700px] mx-auto px-6 text-center">
           <h2 className="font-serif text-[clamp(24px,3.5vw,32px)] font-bold leading-tight tracking-tight mb-5">
             Warum schnelles Handeln wichtig ist
